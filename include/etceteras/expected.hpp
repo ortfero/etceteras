@@ -76,7 +76,7 @@ namespace etceteras {
                     new(&data_.error) E(other.data_.error);
                 } else {
                     data_.error.~E();
-                    new(&data_.value) E(other.data_.value);
+                    new(&data_.value) T(other.data_.value);
                 }
                 has_value_ = other.has_value_;
             }
@@ -105,7 +105,7 @@ namespace etceteras {
                     new(&data_.error) E(std::move(other.data_.error));
                 } else {
                     data_.error.~E();
-                    new(&data_.value) E(std::move(other.data_.value));
+                    new(&data_.value) T(std::move(other.data_.value));
                 }
                 has_value_ = other.has_value_;
             }
@@ -126,7 +126,7 @@ namespace etceteras {
         constexpr expected(unexpected<E> const& error): has_value_{false}, data_{error} { }
         constexpr expected(unexpected<E>&& error): has_value_{false}, data_{std::move(error)} { }
         constexpr T* operator -> () noexcept { return &data_.value; }
-        constexpr T const* operator -> () const noexcept { return &data_.value_; }
+        constexpr T const* operator -> () const noexcept { return &data_.value; }
         constexpr T& operator * () & noexcept { return data_.value; }
         constexpr T const& operator * () const & noexcept { return data_.value; }
         constexpr T&& operator * () && noexcept { return std::move(data_.value); }

@@ -42,6 +42,7 @@ namespace etceteras {
             explicit data(T&& v): value(std::move(v)) { }
             explicit data(unexpected<E> const& e): error{e.value()} { }
             explicit data(unexpected<E>&& e): error{std::move(e).value()} { }
+            ~data() { }
         } data_;
         
     public:
@@ -120,8 +121,8 @@ namespace etceteras {
         }
         
         
-        explicit constexpr expected(T const& value): has_value_{true}, data_{value} { }
-        explicit constexpr expected(T&& value): has_value_{true}, data_{std::move(value)} { }
+        constexpr expected(T const& value): has_value_{true}, data_{value} { }
+        constexpr expected(T&& value): has_value_{true}, data_{std::move(value)} { }
         constexpr expected(unexpected<E> const& error): has_value_{false}, data_{error} { }
         constexpr expected(unexpected<E>&& error): has_value_{false}, data_{std::move(error)} { }
         constexpr T* operator -> () noexcept { return &data_.value; }

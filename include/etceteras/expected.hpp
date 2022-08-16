@@ -34,10 +34,11 @@ namespace etceteras {
     class expected {
     private:
     
-        bool has_value_;
+        bool has_value_{false};
         union data {
             T value;
             E error;
+            data(): error{} { }
             explicit data(T const& v): value{v} { }
             explicit data(T&& v): value(std::move(v)) { }
             explicit data(unexpected<E> const& e): error{e.value()} { }
@@ -52,7 +53,7 @@ namespace etceteras {
         using unexpected_type = unexpected<E>;
         
         
-        expected() = delete;
+        expected() noexcept = default;
         
         
         constexpr expected(expected const& other)

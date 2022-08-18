@@ -44,4 +44,5 @@ TEST_SUITE("expected") {
         auto const target = etceteras::expected<data, int>{data{42}};
         REQUIRE(!!target);
     }
+
 }

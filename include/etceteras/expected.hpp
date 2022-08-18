@@ -61,7 +61,7 @@ namespace etceteras {
             if(has_value_)
                 new(&data_.value) T(other.data_.value);
             else
-                new(&data_.error) T(other.data_.error);
+                new(&data_.error) E(other.data_.error);
         }
         
         

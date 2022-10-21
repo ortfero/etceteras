@@ -2,3 +2,4 @@
 #include "doctest.h"
 
 #include "expected.test.hpp"
+#include "pyramid.test.hpp"

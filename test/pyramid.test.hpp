@@ -44,6 +44,35 @@ TEST_SUITE("pyramid") {
     }
     
     
+    SCENARIO("copy constructor") {
+        auto source = etceteras::pyramid<int>{};
+        source.insert(-1);
+        auto const target = etceteras::pyramid<int>{source};
+        REQUIRE_EQ(target.size(), 1);
+        REQUIRE_EQ(*target.begin(), -1);
+    }
+    
+    
+    SCENARIO("assignment") {
+        auto source = etceteras::pyramid<int>{};
+        source.insert(-1);
+        auto target = etceteras::pyramid<int>{};
+        target = source;
+        REQUIRE_EQ(target.size(), 1);
+        REQUIRE_EQ(*target.begin(), -1);
+    }
+    
+    
+    SCENARIO("move constructor") {
+        auto source = etceteras::pyramid<int>{};
+        source.insert(-1);
+        auto const target = etceteras::pyramid<int>{std::move(source)};
+        REQUIRE_EQ(target.size(), 1);
+        //REQUIRE_EQ(*target.begin(), -1);
+        REQUIRE(source.empty());
+    }
+    
+    
     SCENARIO("preserve insertion order") {
         auto target = etceteras::pyramid<int>{};
         target.insert(1);

@@ -107,14 +107,14 @@ namespace etceteras {
                 return last;
             }
 
-        }; // const_iterator
+        }; // iterator
         
         
         class const_iterator {
         friend class pyramid;
-            detail::pyramid_node<T>* node_;
+            detail::pyramid_node<T> const* node_;
             
-            const_iterator(detail::pyramid_node<T>* node): node_{node} { }
+            const_iterator(detail::pyramid_node<T> const* node) : node_{node} { }
             
         public:
             
@@ -180,9 +180,21 @@ namespace etceteras {
         
         
         pyramid& operator = (pyramid const& other) {
+            auto buffer = other;
+            *this = std::move(buffer);
+            return *this;
+        }
+        
+        
+        pyramid(pyramid&& other) {
+            move_from(std::move(other));
+        }
+        
+        
+        pyramid& operator = (pyramid&& other) {
             clear();
-            for(auto const& item: other)
-                insert(item);
+            move_from(std::move(other));
+            return *this;
         }
         
         
@@ -273,6 +285,48 @@ namespace etceteras {
             free_nodes_.next_node = &free_nodes_;
             occupied_nodes_.previous_node = &occupied_nodes_;
             occupied_nodes_.next_node = &occupied_nodes_;
+        }
+        
+        
+        void move_from(pyramid&& other) {
+            capacity_ = other.capacity_;
+            size_ = other.size_;
+            next_page_estimate_ = other.next_page_estimate_;
+            if(other.pages_.next_page == &other.pages_) {
+                pages_.next_page = &pages_;
+            } else {
+                pages_.next_page = other.pages_.next_page;
+                auto* last_page = other.pages_.next_page;
+                while(last_page->next_page != &other.pages_)
+                    last_page = last_page->next_page;
+                last_page->next_page = &pages_;
+            }
+            if(other.free_nodes_.next_node == &other.free_nodes_) {
+                free_nodes_.next_node = &free_nodes_;
+            } else {
+                free_nodes_.next_node = other.free_nodes_.next_node;
+                free_nodes_.next_node->previous_node = &free_nodes_;
+            }
+            if(other.free_nodes_.previous_node == &other.free_nodes_) {
+                free_nodes_.previous_node = &free_nodes_;
+            } else {
+                free_nodes_.previous_node = other.free_nodes_.previous_node;
+                free_nodes_.previous_node->next_node = &free_nodes_;
+            }
+            if(other.occupied_nodes_.next_node == &other.occupied_nodes_) {
+                occupied_nodes_.next_node = &occupied_nodes_;
+            } else {
+                occupied_nodes_.next_node = other.occupied_nodes_.next_node;
+                occupied_nodes_.next_node->previous_node = &occupied_nodes_;
+            }
+            if(other.occupied_nodes_.previous_node == &other.occupied_nodes_) {
+                occupied_nodes_.previous_node = &occupied_nodes_;
+            } else {
+                occupied_nodes_.previous_node = other.occupied_nodes_.previous_node;
+                occupied_nodes_.previous_node->next_node = &occupied_nodes_;
+            }
+            other.init();
+
         }
 
     
